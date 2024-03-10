@@ -1,0 +1,308 @@
+---
+title: "Assignment"
+output:
+  html_document: default
+  pdf_document: default
+date: '2024-03-09'
+---
+#DataInspection
+```{r cars}
+install.packages("readr")
+install.packages("dplyr")
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("ggplot2")
+summary(cars)
+```
+```{r cars}
+library(readr)
+genotypes <- read_table("fang_et_al_genotypes.txt")
+snp_positions <- read_table("snp_position.txt")
+View(genotypes)
+View(snp_positions)
+head(genotypes)
+head(snp_positions)
+# Display the structure of the datasets
+str(genotypes)
+str(snp_positions)
+# Print the dimensions (rows, columns) of the datasets
+
+print(paste("Dimensions of genotypes data:", dim(genotypes)))
+print(paste("Dimensions of SNP positions data:", dim(snp_positions)))
+# Get a summary of the datasets
+summary(genotypes)
+summary(snp_positions)
+# Dimension of these data frames 
+dim(genotypes)
+dim(snp_positions)
+dim(genotypes)
+str(genotypes)
+str(snp_positions)
+summary(cars)
+```
+
+#Data_processing
+
+```{r cars}
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+View(genotypes)
+#maize_data
+maize <- genotypes %>% filter(Group == "ZMMIL" | Group == "ZMMLR" | Group == "ZMMMR")
+dim(maize)
+write.table(maize, "./maize.txt")
+maize_transposed <- t(maize[,-c(1:3)]) %>% as.data.frame()
+maize_transposed$SNP_ID <- rownames(maize_transposed)
+View(maize_transposed)
+write.table(maize_transposed, "./maize_transposed.txt")
+View(maize_transposed)
+#joining 
+maize_joined <- merge(snp_positions,maize_transposed,by = 'SNP_ID')
+colnames(maize_joined)[4:ncol(maize_joined)] <- as.character(maize$Sample_ID)
+maize_joined[,-c(1:3)] <- lapply(maize_joined[,-c(1:3)],as.character)
+unique(maize_joined$Chromosome)
+write.table(maize_joined, "./maize_joined.txt")
+names(maize_joined)[4] <- "Position"
+View(maize_joined)
+summary(cars)
+```
+
+#10 files (1 for each chromosome) with SNPs ordered based on increasing position values and with missing data encoded by this symbol: ?
+#10 files (1 for each chromosome) with SNPs ordered based on decreasing position values and with missing data encoded by this symbol: -
+
+```{r cars}
+# Finding duplicate column names in the maize_joined dataframe
+dup_cols <- names(maize_joined)[duplicated(names(maize_joined))]
+
+# Printing out the duplicate column names to understand which are duplicated
+print(dup_cols)
+
+# Removing the duplicated columns by creating a unique set of column names
+
+# Ensure unique column names in maize_joined
+names(maize_joined) <- make.names(names(maize_joined), unique = TRUE)
+
+# Checking if duplicates were resolved
+anyDuplicated(names(maize_joined))
+
+# Extract the desired chromosomes (assuming they are labeled 1 through 10)
+desired_chromosomes <- as.character(1:10)
+
+# Defining the process_chromosome function
+process_chromosome <- function(df, chromosome, missing_value_increase, missing_value_decrease) {
+  # Filter for the specific chromosome
+  chr_data <- df %>% filter(Chromosome == chromosome)
+  
+# Processing for increasing position values
+  chr_data_inc <- chr_data %>%
+    arrange(Position) %>%
+    mutate(across(starts_with("SNP"), ~replace_na(as.character(.), missing_value_increase)))
+  
+# Writing a file with increasing position values
+  write_csv(chr_data_inc, sprintf("maize_chr%s_increasing.csv", chromosome))
+  
+# Process for decreasing position values
+  chr_data_dec <- chr_data %>%
+    arrange(desc(Position)) %>%
+    mutate(across(starts_with("SNP"), ~replace_na(as.character(.), missing_value_decrease)))
+  
+# Write to a file with decreasing position values
+  write_csv(chr_data_dec, sprintf("maize_chr%s_decreasing.csv", chromosome))
+}
+
+# Applying the function to each of the desired chromosomes
+results <- lapply(desired_chromosomes, process_chromosome, df = maize_joined, 
+                  missing_value_increase = "?", missing_value_decrease = "-")
+
+# After running the lapply function, checking for one of the files again.
+file.exists("maize_chr1_increasing.csv")
+summary(cars)
+```
+
+#teosinte_data
+```{r cars}
+teosinte <- genotypes %>% filter(Group == "ZMPBA" | Group == "ZMPIL" | Group == "ZMPJA")
+dim(teosinte)
+write.table(teosinte, "./teosinte.txt")
+teosinte_transposed <- t(teosinte[,-c(1:3)]) %>% as.data.frame()
+teosinte_transposed$SNP_ID <- rownames(teosinte_transposed)
+View(teosinte_transposed)
+write.table(teosinte_transposed, "./teosinte_transposed.txt")
+View(teosinte_transposed)
+#joining 
+teosinte_joined <- merge(snp_positions,teosinte_transposed,by = 'SNP_ID')
+colnames(teosinte_joined)[4:ncol(teosinte_joined)] <- as.character(teosinte$Sample_ID)
+teosinte_joined[,-c(1:3)] <- lapply(teosinte_joined[,-c(1:3)],as.character)
+unique(teosinte_joined$Chromosome)
+write.table(teosinte_joined, "./teosinte_joined.txt")
+names(teosinte_joined)[4] <- "Position"
+View(teosinte_joined)
+summary(cars)
+```
+#10 files (1 for each chromosome) with SNPs ordered based on increasing position values and with missing data encoded by this symbol: ?
+#10 files (1 for each chromosome) with SNPs ordered based on decreasing position values and with missing data encoded by this symbol: -
+
+```{r cars}
+# Finding duplicate column names in the maize_joined dataframe
+dup_cols <- names(teosinte_joined)[duplicated(names(teosinte_joined))]
+
+# Printing out the duplicate column names to understand which are duplicated
+print(dup_cols)
+
+# Removing the duplicated columns by creating a unique set of column names
+
+# Ensure unique column names in maize_joined
+names(teosinte_joined) <- make.names(names(teosinte_joined), unique = TRUE)
+
+# Checking if duplicates were resolved
+anyDuplicated(names(teosinte_joined))
+
+# Extract the desired chromosomes (assuming they are labeled 1 through 10)
+desired_chromosomes <- as.character(1:10)
+
+# Defining the process_chromosome function
+process_chromosome <- function(df, chromosome, missing_value_increase, missing_value_decrease) {
+  # Filter for the specific chromosome
+  chr_data <- df %>% filter(Chromosome == chromosome)
+  
+# Processing for increasing position values
+  chr_data_inc <- chr_data %>%
+    arrange(Position) %>%
+    mutate(across(starts_with("SNP"), ~replace_na(as.character(.), missing_value_increase)))
+  
+# Writing a file with increasing position values
+  write_csv(chr_data_inc, sprintf("teosinte_chr%s_increasing.csv", chromosome))
+  
+# Process for decreasing position values
+  chr_data_dec <- chr_data %>%
+    arrange(desc(Position)) %>%
+    mutate(across(starts_with("SNP"), ~replace_na(as.character(.), missing_value_decrease)))
+  
+# Write to a file with decreasing position values
+  write_csv(chr_data_dec, sprintf("teosinte_chr%s_decreasing.csv", chromosome))
+}
+
+# Applying the function to each of the desired chromosomes
+results <- lapply(desired_chromosomes, process_chromosome, df = teosinte_joined, 
+                  missing_value_increase = "?", missing_value_decrease = "-")
+
+# After running the lapply function, checking for one of the files again.
+file.exists("teosinte_chr1_increasing.csv")
+summary(cars)
+```
+
+
+```{r cars}
+
+#partII
+library(ggplot2)
+# Summarize the count of non-missing SNPs per chromosome for maize
+
+
+snp_positions %>% filter(Position < 10e1000) %>% 
+  ggplot(aes(as.double(Chromosome))) + geom_bar(fill = 'blue', color = 'green') + geom_text(stat = 'count', aes(label = ..count..), vjust = -1) +
+scale_x_continuous(breaks = 1:10) + theme_replace() + ggtitle("SNPs count/CHR") + ylab('Number of SNPs') + xlab('CHR') 
+ggsave('./Visualization/SNPs_number.png', create.dir = TRUE)
+summary(cars)
+```
+```{r cars}
+snp_positions %>% filter(Position < 10e1000) %>% 
+  ggplot(aes(as.double(Position)/1000000)) + geom_histogram(aes(y = ..density..), color = 'green', fill = "green", alpha = 0.4, bins = 20) + geom_density(aes(as.double(Position)/1000000), color = "blue") + facet_wrap(~ as.double(Chromosome), scales = "free") + theme_replace() + ggtitle("Across Chromosomes distribution") +
+  xlab('Position (Mb)') + ylab('SNP density')
+ggsave(paste0("./Visualization/SNPs_distribution.png"))
+summary(cars)
+```
+```{r cars}
+##Comparing SNP distribution between maize and teosinte individuals
+
+maize_joined %>% 
+  filter(Position < 10e1000) %>% ggplot(aes(as.double(Chromosome))) + geom_bar(fill = 'blue', color = 'green') + 
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -1) + scale_x_continuous(breaks = 1:10) + theme_replace() +
+  ggtitle("SNPs count/CHR") + ylab('Number of SNPs') + xlab('CHR') 
+ggsave('./Visualization/SNPs_number_maize.png')
+summary(cars)
+```
+```{r cars}
+teosinte_joined %>% filter(Position < 10e1000) %>%  ggplot(aes(as.double(Chromosome))) + geom_bar(fill = 'blue', color = 'green') + 
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -1) + scale_x_continuous(breaks = 1:10) + theme_replace() +
+  ggtitle("SNPs count/CHR") + ylab('Number of SNPs') + xlab('CHR') 
+ggsave('./Visualization/SNPs_number_teosinte.png')
+```
+summary(cars)
+##2.Missing data and amount of heterozygosity
+
+###2a. Proportion of homozygous and Hets by sample and Plotting
+```{r cars}
+mutate_genotypes <- 
+  genotypes %>% select(-JG_OTU, -Group) %>% pivot_longer(!Sample_ID) %>% 
+  mutate(Allele = ifelse(value %in% c('C/C', 'G/G', 'A/A', 'T/T'), 'Homozygote', ifelse(value == '?/?', 'NA', 'Heterozygote')))  
+
+mutate_genotypes %>% group_by(Sample_ID) %>%  count(Allele) %>% 
+  ggplot(aes(fill = Allele, y = n, x = Sample_ID)) +
+  geom_bar(position = "fill", stat = "identity") +
+  ggtitle("Proportion of Homozygotes, Heterozygotes and Missing Data by Sample") +
+  ylab('Proportion') +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+ggsave('./Visualization/Allelic_proportion_by_sample.png')
+
+summary(cars)
+```
+
+##2b. Proportion of homozygous and Hets by Group and Plotting
+
+```{r cars}
+
+mutate_groups <- 
+  genotypes %>% select(-Sample_ID, -JG_OTU) %>%   
+  pivot_longer(!Group) %>% mutate(Allele = ifelse(value %in% c('C/C', 'G/G', 'A/A', 'T/T'), 'Homozygote', ifelse(value == '?/?', 'NA', 'Heterozygote')))  
+
+mutate_groups %>% group_by(Group) %>%  count(Allele) %>% 
+  ggplot(aes(fill = Allele, y = n, x = Group)) +
+  geom_bar(position = "fill", stat = "identity") +
+  ggtitle("Proportion of Homozygotes, Heterozygotes and Missing Data by Group") +
+  ylab('Proportion') 
+ggsave('./Visualization/Allelic_Proportion_by_group.jpg')
+
+summary(cars)
+```
+
+##3 Own_Plot:Proportion of Heterozygous Allele
+Here I have plotted proportion of each Heterozygous Allele in different genotype group.
+
+```{r cars}
+mutate_groups %>% filter(Allele == "Heterozygote") %>% group_by(Group) %>%  count(value) %>% 
+  ggplot(aes(fill = value, y = n, x = Group)) +
+  geom_bar(position = "fill", stat = "identity") +
+  ggtitle("Proportion Heterozygote sites in each group") +
+  ylab('Proportion') 
+ggsave('./Visualization/Heterozygous_distribution.png')
+
+
+summary(cars)
+```
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
