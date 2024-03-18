@@ -1,0 +1,28 @@
+```{r}
+# You have clearly specified each aspect. Starting from Data Inspection
+# 1. Data Inspection
+# You correctly installed and loaded the necessary packages (readr, dplyr, tidyverse, tidyr, ggplot2) for data handling, manipulation, and visualization.
+# You used the read_table() function from the readr package to read the two data files (fang_et_al_genotypes.txt and snp_position.txt) into data frames (genotypes and snp_positions).
+# You inspected the structure of the data frames using str() and summary() functions and printed the dimensions of the data frames using dim() and the column names using colnames()
+# Here in this section you included summary(cars) multiple times in the code, which seems unnecessary and may be a leftover from a template or example code. You can remove these lines as they don't contribute to the data inspection process and seem to be remnants of template or example code.
+```
+
+```{r}
+# Data Processing
+# For maize and teosinte data, you correctly filtered rows based on the specified groups ("ZMMIL", "ZMMLR", "ZMMMR") ("ZMPBA", "ZMPIL", "ZMPJA") and a new data frame maize and teosinte.
+#You transposed the maize and teosinte data frame using t() function and then converted it back to a data frame using as.data.frame(). 
+#You assigned SNP IDs as row names in the transposed data frame maize_transposed and teosinte_transposed, which can be useful for indexing later.
+#You joined the transposed maize and teosinte data with SNP positions using merge() based on the "SNP_ID" column.
+#Handling duplicate column names in maize_joined and teosinte_joined using make.names() to ensure unique column names is a good practice to avoid potential issues during data manipulation.
+#However, when I viewed the teosinte_joined and maized_joined the column names were confusing. It was named as ("TA217","TAMex0091.1"). It would be great if it was actual ZMPBA, ZMPBA.1, ZMPBA.2..)
+# There weren't steps performed for removing data with unknown and multiple chromosomes which would help ensure that the data used for further analysis is consistent and reliable. And also for removing data with multiple Position
+```
+
+```{r}
+#Visualization
+#You created visualizations to investigate SNP counts per chromosome, SNP distribution across chromosomes, and a comparison of SNP distribution between maize and teosinte individuals.
+#You also visualized the proportion of homozygous, heterozygous, and missing data by sample and by group using bar charts.
+#The use of colors in the visualizations is effective for differentiating between categories or groups. However, it would be great to include a legend where necessary, particularly in plots where multiple colors represent different data elements (e.g., SNP alleles or chromosome groups) especially in SNPs_number_maize and teosinte plots.
+#However in the proportion of homozygotes, heterozygotes and missing data visualization plot the names in the x-axis seems overlapping and were difficult to understand.
+```
+
