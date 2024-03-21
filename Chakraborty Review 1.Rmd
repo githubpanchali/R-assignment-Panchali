@@ -1,0 +1,15 @@
+1. Data Inspection
+Comprehensive data structure inspection using dim(), head(), class(), str(), and object.size() was good.
+Good practice in checking both dimensions and the content of the data frames to understand the data better.
+
+Consider using summary() for a quick statistical summary that might offer additional insights.
+
+2. Data Processing
+Efficient use of dplyr for data manipulation.
+Transposition and merging processes are logically structured and well-executed.
+The function process_and_save_files is a robust approach for automating the processing and saving of files, demonstrating good coding practices.
+
+3. Visualization
+Effective use of ggplot2 for creating informative and aesthetically pleasing visualizations.
+Visualization of SNP distribution and heterozygosity provides meaningful insights into the data.
+For the SNP distribution plots (p0, p1, p2, p3), consider adding more descriptive labels or a legend to improve interpretability
